@@ -1,0 +1,13 @@
+{{- if and .Values.metrics.prometheusRule.enabled .Values.metrics.prometheusRule.rules }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "valkey-operator.fullname" . }}
+  labels:
+    {{- include "valkey-operator.labels" . | nindent 4 }}
+spec:
+  groups:
+  - name: {{ include "valkey-operator.name" . }}-alerts
+    rules:
+    {{- toYaml .Values.metrics.prometheusRule.rules | nindent 4 }}
+{{- end }}

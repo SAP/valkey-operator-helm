@@ -1,0 +1,103 @@
+{{- $caCert := "" }}
+{{- if .Values.webhook.certManager.enabled }}
+{{- if not .Values.webhook.certManager.issuerName }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "valkey-operator.fullname" . }}
+  labels:
+    {{- include "valkey-operator.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "valkey-operator.fullname" . }}
+  labels:
+    {{- include "valkey-operator.labels" . | nindent 4 }}
+spec:
+  dnsNames:
+  - {{ include "valkey-operator.fullname" . }}
+  - {{ include "valkey-operator.fullname" . }}.{{ .Release.Namespace }}
+  - {{ include "valkey-operator.fullname" . }}.{{ .Release.Namespace }}.svc
+  - {{ include "valkey-operator.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    {{- if .Values.webhook.certManager.issuerName }}
+    {{- with .Values.webhook.certManager.issuerGroup }}
+    group: {{ . }}
+    {{- end }}
+    {{- with .Values.webhook.certManager.issuerKind }}
+    kind: {{ . }}
+    {{- end }}
+    name: {{ .Values.webhook.certManager.issuerName }}
+    {{- else }}
+    name: {{ include "valkey-operator.fullname" . }}
+    {{- end }}
+  secretName: {{ include "valkey-operator.fullname" . }}-tls-managed
+{{- else }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "valkey-operator.fullname" . }}-tls
+  labels:
+    {{- include "valkey-operator.labels" . | nindent 4 }}
+type: Opaque
+data:
+  {{- $data := (lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" (include "valkey-operator.fullname" .))).data }}
+  {{- if $data }}
+  {{ $data | toYaml | nindent 2 }}
+  {{- $caCert = index $data "ca.crt" }}
+  {{- else }}
+  {{- $cn := printf "%s.%s.svc" (include "valkey-operator.fullname" .) .Release.Namespace }}
+  {{- $ca := genCA (printf "%s-ca" (include "valkey-operator.fullname" .)) 36500 }}
+  {{- $cert := genSignedCert $cn nil (list $cn) 36500 $ca }}
+  ca.crt: {{ $ca.Cert | b64enc }}
+  tls.crt: {{ $cert.Cert | b64enc }}
+  tls.key: {{ $cert.Key | b64enc }}
+  {{- $caCert = $ca.Cert | b64enc }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ include "valkey-operator.fullname" . }}
+  labels:
+    {{- include "valkey-operator.labels" . | nindent 4 }}
+  {{- if .Values.webhook.certManager.enabled }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "valkey-operator.fullname" . }}
+  {{- end }}
+webhooks:
+- name: validate.valkey.cache.cs.sap.com
+  admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ $caCert }}
+    {{- end }}
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: {{ include "valkey-operator.fullname" . }}
+      port: {{ .Values.service.port }}
+      path: /admission/cache.cs.sap.com/v1alpha1/valkey/validate
+  rules:
+  - apiGroups:
+    - cache.cs.sap.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - valkey
+    scope: Namespaced
+  matchPolicy: Equivalent
+  sideEffects: None
+  timeoutSeconds: 10
+  failurePolicy: Fail
