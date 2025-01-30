@@ -1,4 +1,4 @@
-# Valkey™ Operator Helm Chart
+# Valkey Operator Helm Chart
 
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/valkey-operator-helm)](https://api.reuse.software/info/github.com/SAP/valkey-operator-helm)
 
