@@ -57,4 +57,3 @@ jobs:
         kubectl create ns operator-system
         helm -n operator-system upgrade -i $release_name --wait --timeout 5m $CHART_DIRECTORY
         helm -n operator-system test $release_name
-
