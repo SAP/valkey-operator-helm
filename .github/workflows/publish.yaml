@@ -73,12 +73,12 @@ jobs:
         ref: helm-index
         path: index
 
-    - uses: azure/setup-helm@v4
+    - uses: azure/setup-helm@v5
       with:
        version: ${{ env.HELM_VERSION }}
 
     - name: Setup Pages
-      uses: actions/configure-pages@v5
+      uses: actions/configure-pages@v6
 
     - name: Create package
       run: |
@@ -110,13 +110,13 @@ jobs:
           "$upload_url?name=$(basename $file)"
 
     - name: Upload index
-      uses: actions/upload-pages-artifact@v4
+      uses: actions/upload-pages-artifact@v5
       with:
         path: index
 
     - name: Publish index
       id: publish-index
-      uses: actions/deploy-pages@v4
+      uses: actions/deploy-pages@v5
 
   publish-to-packages:
     name: Publish chart to github packages
@@ -130,7 +130,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
 
-    - uses: azure/setup-helm@v4
+    - uses: azure/setup-helm@v5
       with:
        version: ${{ env.HELM_VERSION }}
 
