@@ -3,6 +3,16 @@ entries:
   valkey-operator:
   - apiVersion: v2
     appVersion: v0.1.14
+    created: "2026-08-31T09:31:26.32204471Z"
+    description: A Helm chart for https://github.com/sap/valkey-operator
+    digest: f2400a9d9e729c0904962d79de7a3764d718736577416eac2d4a02cdf19fead0
+    name: valkey-operator
+    type: application
+    urls:
+    - https://github.com/SAP/valkey-operator-helm/releases/download/0.1.24/valkey-operator-0.1.24.tgz
+    version: 0.1.24
+  - apiVersion: v2
+    appVersion: v0.1.14
     created: "2026-08-03T10:26:33.714852758Z"
     description: A Helm chart for https://github.com/sap/valkey-operator
     digest: b985e2767889130edbcab301261ebf19eb7ca4a171f4c587b67d405da1139c76
@@ -241,4 +251,4 @@ entries:
     urls:
     - https://github.com/SAP/valkey-operator-helm/releases/download/0.1.0/valkey-operator-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-03T10:26:33.712994601Z"
+generated: "2026-08-31T09:31:26.319524818Z"
