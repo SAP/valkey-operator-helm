@@ -1,6 +1,6 @@
 # valkey-operator
 
-![Version: 0.1.25](https://img.shields.io/badge/Version-0.1.25-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.14](https://img.shields.io/badge/AppVersion-v0.1.14-informational?style=flat-square)
+![Version: 0.1.26](https://img.shields.io/badge/Version-0.1.26-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.15](https://img.shields.io/badge/AppVersion-v0.1.15-informational?style=flat-square)
 
 A Helm chart for https://github.com/sap/valkey-operator
 
