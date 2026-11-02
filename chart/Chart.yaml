@@ -3,7 +3,7 @@ apiVersion: v2
 name: valkey-operator
 description: A Helm chart for https://github.com/sap/valkey-operator
 type: application
-version: 0.1.30
+version: 0.1.31
 appVersion: v0.1.20
 sources:
   - https://github.com/SAP/valkey-operator-helm
